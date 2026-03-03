@@ -16,7 +16,8 @@ export class Game extends Scene
     {
         this.cameras.main.setBackgroundColor(0x00ff00);
 
-        this.add.image(512, 384, 'background').setAlpha(0.5);
+        this.add.image(512, 512, 'background').setAlpha(0.5);
+        // this.add.image(512, 384, 'background').setAlpha(0.5);
         // this.add.image(512, 384, 'background').setAlpha(0.5);
 
         this.add.text(512, 384, 'Make something fun!\nand share it with us:\nsupport@phaser.io', {
@@ -45,17 +46,18 @@ export class Game extends Scene
         // Create a group for the grills
         this.grillGroup = this.add.group();
 
-        const gridSize = 3; // 3x3 grid
+        const col = 3; // 3x3 grid
+        const row = 4; // 3x3 grid
 
-        const grillWidth = this.cameras.main.width / gridSize; // Width of each grill
-        const grillHeight = this.cameras.main.height / gridSize; // Height of each grill
+        const grillWidth = this.cameras.main.width / col; // Width of each grill
+        const grillHeight = this.cameras.main.height / row; // Height of each grill
 
         // Loop to create and position grills in a 3x3 grid
-        for (let row = 0; row < gridSize; row++) {
-            for (let col = 0; col < gridSize; col++) {
+        for (let r = 0; r < row; r++) {
+            for (let c = 0; c < col; c++) {
                 const grill = this.grillGroup.create(
-                    col * grillWidth, 
-                    row * grillHeight, 
+                    c * grillWidth, 
+                    r * grillHeight, 
                     'grill'
                 );
                 grill.setOrigin(0); // Set origin to top-left

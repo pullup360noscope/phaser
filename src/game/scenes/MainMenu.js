@@ -9,11 +9,12 @@ export class MainMenu extends Scene
 
     create ()
     {
-        this.add.image(512, 384, 'background');
+        const bg = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'background');
+        bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height);
 
-        this.add.image(512, 300, 'logo');
+        this.add.image(this.cameras.main.centerX, this.cameras.main.centerY-100, 'logo');
 
-        this.add.text(512, 460, 'Main Menu', {
+        this.add.text(this.cameras.main.centerX, this.cameras.main.centerY + 60, 'Main Menu', {
             fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
