@@ -23,6 +23,16 @@ export class Game extends Scene
         gameObject.x = dragX;
         gameObject.y = dragY;
     });
+
+        this.input.on('dragend', (pointer, gameObject) => {
+        const distance = Phaser.Math.Distance.Between(gameObject.x, gameObject.y, targetObject.x, targetObject.y);
+        
+        if (distance < 50) { // Change 50 to your desired snapping distance
+            gameObject.x = targetObject.x;
+            gameObject.y = targetObject.y;
+        }
+    });
+
         // Setup input click counter and behavior
         setupClickCounter(this);
     }

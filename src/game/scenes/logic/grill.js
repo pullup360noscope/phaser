@@ -18,6 +18,7 @@ export function createGrillGroup(scene, onGrillClickedHandler, cols = 3, rows = 
             );
             grill.setOrigin(0);
             grill.setInteractive();
+            grill.setCollideWorldBounds(true);
 
             grill.on('pointerdown', () => {
                 onGrillClickedHandler(grill);
