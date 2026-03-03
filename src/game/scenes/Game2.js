@@ -1,12 +1,10 @@
 import { Scene } from 'phaser';
-import { setupBackground, setupClickCounter } from './logic/GameHeader.js';
+import { setupClickCounter } from './logic/GameHeader.js';
 
 const NUM_COLUMNS = 3;
 const NUM_ROWS = 4;
-const TARGET_SIZE = 100;
-const DRAGGABLE_WIDTH = 80;
-const DRAGGABLE_HEIGHT = 120;
-const SNAPPING_DISTANCE = 50;
+let TARGET_SIZE, DRAGGABLE_WIDTH, DRAGGABLE_HEIGHT;
+const SNAPPING_DISTANCE_RATIO = 0.3; // Ratio for snapping distance
 
 let targetObjects = [];
 let draggableObjects = [];
@@ -23,26 +21,36 @@ export class Game extends Scene {
     }
 
     create() {
-        // Create target objects in grid
+        const baseWidth = this.game.config.width / NUM_COLUMNS; // Base width per column
+
+        // Set sizes based on viewport dimensions
+        TARGET_SIZE = baseWidth * 0.8; // Target size is 80% of base width
+        DRAGGABLE_WIDTH = baseWidth * 0.7; // Draggable width is 70% of base width
+        DRAGGABLE_HEIGHT = TARGET_SIZE * 1.2; // Make draggable height 120% of target size
+        const SNAPPING_DISTANCE = TARGET_SIZE * SNAPPING_DISTANCE_RATIO; // 5% of target size for snapping
+        // Create target objects in a grid
         for (let row = 0; row < NUM_ROWS; row++) {
             for (let col = 0; col < NUM_COLUMNS; col++) {
-                const targetX = col * (TARGET_SIZE + 20) + 100;
-                const targetY = row * (TARGET_SIZE + 20) + 50;
+                const targetX = col * (TARGET_SIZE + 20) + TARGET_SIZE / 2; // Center target
+                const targetY = row * (TARGET_SIZE + 20) + TARGET_SIZE / 2; // Center target
                 const target = this.physics.add.sprite(targetX, targetY, 'grill');
-                target.setScale(1);
+                target.setDisplaySize(TARGET_SIZE, TARGET_SIZE); // Set target size
                 targetObjects.push(target);
             }
         }
 
         // Create draggable objects
         const draggableConfig = new Array(NUM_COLUMNS * NUM_ROWS).fill(null).map((_, index) => {
-            return { x: 50 + (index % NUM_COLUMNS) * (DRAGGABLE_WIDTH + 20), y: 50 + Math.floor(index / NUM_COLUMNS) * (DRAGGABLE_HEIGHT + 20) };
+            return {
+                x: (index % NUM_COLUMNS) * (DRAGGABLE_WIDTH + 20) + DRAGGABLE_WIDTH / 2,
+                y: Math.floor(index / NUM_COLUMNS) * (DRAGGABLE_HEIGHT + 20) + DRAGGABLE_HEIGHT / 2
+            };
         });
 
         draggableConfig.forEach(config => {
             const draggable = this.physics.add.sprite(config.x, config.y, 'skewer');
-            draggable.setScale(0.25);
             draggable.setInteractive();
+            draggable.setScale(0.25);
             this.input.setDraggable(draggable);
 
             this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
@@ -51,7 +59,6 @@ export class Game extends Scene {
             });
 
             this.input.on('dragend', (pointer, gameObject) => {
-
                 targetObjects.forEach(target => {
                     const distance = Phaser.Math.Distance.Between(gameObject.x, gameObject.y, target.x, target.y);
 
@@ -60,7 +67,6 @@ export class Game extends Scene {
                         gameObject.y = target.y;
                     }
                 });
-
             });
 
             draggableObjects.push(draggable);

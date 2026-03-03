@@ -15,7 +15,7 @@ const config = {
     // height: 1024,
 
     width: window.innerWidth,  // Use full viewport width
-    height: window.innerHeight, // Use full viewport height
+    height: 1.5 * window.innerWidth,  // Maintain a 2:3 aspect ratio based on width
     parent: 'game-container',
     backgroundColor: '#028af8',
     physics: {
