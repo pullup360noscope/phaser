@@ -1,7 +1,12 @@
-march 2:
-    1. try very basic render of grid of grills (don't need to interact with)
-    2. then render skewers (should be able to move then snap into place with 1/3 slots available on grill)
-    3. then use update() to load next grill
+march 3.1:
+-check winCon
+    -only need to check nearby locality of the snapped index
+    -coordinates array is basically the game state array
+-spawn new skewers
+    -standardize png resolution (auto gen pixel art?)
+    -best way to load assets?
+-add menu
+-difficulty generator
 
 march 3:
 -its possible to make sprites check if they've collided with a target position
@@ -22,3 +27,7 @@ march 3:
     -keep each round either 2-3mins
     -but change number of types of skewers and total number of targets
         -targets need to be active or in-active states
+march 2:
+    1. try very basic render of grid of grills (don't need to interact with)
+    2. then render skewers (should be able to move then snap into place with 1/3 slots available on grill)
+    3. then use update() to load next grill

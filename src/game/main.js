@@ -17,7 +17,8 @@ const config = {
     width: window.innerWidth,  // Use full viewport width
     height: 1.5 * window.innerWidth,  // Maintain a 2:3 aspect ratio based on width
     parent: 'game-container',
-    backgroundColor: '#028af8',
+    backgroundColor: '#d0a364',
+    // backgroundColor: '#028af8',
     physics: {
         default: 'arcade',
         arcade: {

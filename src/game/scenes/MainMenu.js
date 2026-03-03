@@ -9,8 +9,8 @@ export class MainMenu extends Scene
 
     create ()
     {
-        const bg = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'background');
-        bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height);
+        // const bg = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'background').setAlpha(0.15);
+        // bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height);
 
         this.add.image(this.cameras.main.centerX, this.cameras.main.centerY-100, 'logo');
 
