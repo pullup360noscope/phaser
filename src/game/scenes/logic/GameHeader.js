@@ -20,7 +20,7 @@ export function setupClickCounter(scene) {
 
         if (scene.clickCount === 1) {
             console.log("Second click detected! You could add different logic here.");
-        } else if (scene.clickCount === 3) {
+        } else if (scene.clickCount === -1) {
             scene.scene.start('GameOver');
             scene.clickCount = 0;
         }

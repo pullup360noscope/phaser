@@ -19,6 +19,10 @@ export class Game extends Scene
         // Setup visuals and background text
         setupBackground(this);
 
+        this.input.on('drag', (_pointer, gameObject, dragX, dragY) => {
+        gameObject.x = dragX;
+        gameObject.y = dragY;
+    });
         // Setup input click counter and behavior
         setupClickCounter(this);
     }

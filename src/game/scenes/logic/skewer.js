@@ -5,10 +5,14 @@ export function createSkewer(scene, x, y) {
     skewer.setScale(scale);
     skewer.setOrigin(0.5);
     skewer.setInteractive();
+    
+    scene.input.setDraggable(skewer);
 
-    skewer.on('pointerdown', () => {
-        onSkewerClicked(skewer);
-    });
+
+
+    // skewer.on('pointerdown', () => {
+    //     onSkewerClicked(skewer);
+    // });
 }
 
 export function onSkewerClicked(skewer) {
