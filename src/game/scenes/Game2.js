@@ -28,16 +28,16 @@ export class Game extends Scene {
         DRAGGABLE_WIDTH = baseWidth * 0.7; // Draggable width is 70% of base width
         DRAGGABLE_HEIGHT = TARGET_SIZE * 1.2; // Make draggable height 120% of target size
         const SNAPPING_DISTANCE = TARGET_SIZE * SNAPPING_DISTANCE_RATIO; // 5% of target size for snapping
-        // Create target objects in a grid
-        for (let row = 0; row < NUM_ROWS; row++) {
-            for (let col = 0; col < NUM_COLUMNS; col++) {
-                const targetX = col * (TARGET_SIZE + 20) + TARGET_SIZE / 2; // Center target
-                const targetY = row * (TARGET_SIZE + 20) + TARGET_SIZE / 2; // Center target
-                const target = this.physics.add.sprite(targetX, targetY, 'grill');
-                target.setDisplaySize(TARGET_SIZE, TARGET_SIZE); // Set target size
-                targetObjects.push(target);
-            }
-        }
+        // // Create target objects in a grid
+        // for (let row = 0; row < NUM_ROWS; row++) {
+        //     for (let col = 0; col < NUM_COLUMNS; col++) {
+        //         const targetX = col * (TARGET_SIZE + 20) + TARGET_SIZE / 2; // Center target
+        //         const targetY = row * (TARGET_SIZE + 20) + TARGET_SIZE / 2; // Center target
+        //         const target = this.physics.add.sprite(targetX, targetY, 'grill');
+        //         target.setDisplaySize(TARGET_SIZE, TARGET_SIZE); // Set target size
+        //         targetObjects.push(target);
+        //     }
+        // }
 
         // Create draggable objects
         const draggableConfig = new Array(NUM_COLUMNS * NUM_ROWS).fill(null).map((_, index) => {
