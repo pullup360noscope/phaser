@@ -1,3 +1,5 @@
+import {createGrillGroup, onGrillClicked } from './grill.js';
+
 export function setupBackground(scene) {
     scene.cameras.main.setBackgroundColor(0x00ff00);
 
@@ -8,6 +10,8 @@ export function setupBackground(scene) {
         stroke: '#000000', strokeThickness: 8,
         align: 'center'
     }).setOrigin(0.5);
+
+    createGrillGroup(scene, onGrillClicked, 3, 4);
 }
 
 export function setupClickCounter(scene) {
@@ -25,32 +29,3 @@ export function setupClickCounter(scene) {
     });
 }
 
-export function onGrillClicked(grill) {
-    console.log('Grill clicked:', grill);
-    grill.setTint(0xff0000);
-}
-
-export function createGrillGroup(scene, onGrillClickedHandler, cols = 3, rows = 4) {
-    const group = scene.add.group();
-
-    const grillWidth = scene.cameras.main.width / cols;
-    const grillHeight = scene.cameras.main.height / rows;
-
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-            const grill = group.create(
-                c * grillWidth,
-                r * grillHeight,
-                'grill'
-            );
-            grill.setOrigin(0);
-            grill.setInteractive();
-
-            grill.on('pointerdown', () => {
-                onGrillClickedHandler(grill);
-            });
-        }
-    }
-
-    return group;
-}

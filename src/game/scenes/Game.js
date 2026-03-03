@@ -1,5 +1,5 @@
 import { Scene } from 'phaser';
-import { setupBackground, setupClickCounter, createGrillGroup, onGrillClicked } from './logic/GameHeader.js';
+import { setupBackground, setupClickCounter} from './logic/GameHeader.js';
 
 export class Game extends Scene
 {
@@ -20,10 +20,6 @@ export class Game extends Scene
 
         // Setup input click counter and behavior
         setupClickCounter(this);
-
-        // Create grills and keep the group
-        this.grillGroup = createGrillGroup(this, onGrillClicked, 3, 4);
-
     }
 
 }
