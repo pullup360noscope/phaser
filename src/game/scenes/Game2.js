@@ -27,7 +27,6 @@ export class Game extends Scene {
         TARGET_SIZE = baseWidth * 0.8; // Target size is 80% of base width
         DRAGGABLE_WIDTH = baseWidth * 0.7; // Draggable width is 70% of base width
         DRAGGABLE_HEIGHT = TARGET_SIZE * 1.2; // Make draggable height 120% of target size
-        const SNAPPING_DISTANCE = TARGET_SIZE * SNAPPING_DISTANCE_RATIO; // 5% of target size for snapping
 
 
 
@@ -48,6 +47,7 @@ export class Game extends Scene {
         // const offsetX = 50; // Offset between groups of columns
         const offsetY = cellHeight / 2; // Vertical offset between rows
         // const offsetY = 100; // Vertical offset between rows
+        const SNAPPING_DISTANCE = cellWidth/2; // 5% of target size for snapping
 
         console.log("viewportWidth: ", viewportWidth, "viewportHeight: ", viewportHeight);
         console.log("cellWidth: ", cellWidth, "cellHeight: ", cellHeight);
@@ -84,7 +84,7 @@ export class Game extends Scene {
             const randomNum = Math.random();
 
             // Set your probability threshold (e.g., 0.5 for 50%)
-            const probabilityThreshold = 0.7;
+            const probabilityThreshold = 0.3;
 
             // Skip creating the skewer based on the random number
             if (randomNum < probabilityThreshold) {
@@ -117,18 +117,39 @@ export class Game extends Scene {
             skewer.y = dragY;
         });
 
-        //setup snapping logic on drag end
-        this.input.on('dragend', (pointer, skewer) => {
-            console.log(skewer.texture.key)
-            coordinates.forEach(target => {
-                const distance = Phaser.Math.Distance.Between(skewer.x, skewer.y, target.x, target.y);
+this.input.on('dragstart', (pointer, skewer) => {
+    // Store the original position of the skewer when dragging starts
+    skewer.originalX = skewer.x;
+    skewer.originalY = skewer.y;
+});
 
-                if (distance < SNAPPING_DISTANCE) {
-                    skewer.x = target.x;
-                    skewer.y = target.y;
-                }
-            });
-        });
+this.input.on('dragend', (pointer, skewer) => {
+    console.log(skewer.texture.key);
+    let snapped = false; // Flag to check if snapping occurred
+    
+    coordinates.forEach(target => {
+        const distance = Phaser.Math.Distance.Between(skewer.x, skewer.y, target.x, target.y);
+        
+        // Conditional check for snapping
+        if (distance < SNAPPING_DISTANCE) {
+            if (target.item) {
+                console.log('Target already occupied!');
+                return; // Skip snapping if target is occupied
+            }
+            // If condition passes, snap to target
+            skewer.x = target.x;
+            skewer.y = target.y;
+            snapped = true; // Set snapped flag to true
+        }
+    });
+    
+    // If snapping didn't occur, return skewer to original position
+    if (!snapped) {
+        skewer.x = skewer.originalX;
+        skewer.y = skewer.originalY;
+    }
+});
+
 
     }
 
