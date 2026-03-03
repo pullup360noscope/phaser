@@ -11,6 +11,7 @@ export class Game extends Scene
     preload() {
         // Preload any necessary assets here
         this.load.image('grill', 'assets/grill.png'); // Load the grill image
+        this.load.image('skewer', 'assets/skewer.png'); // Load the skewer image
     }
 
     create ()

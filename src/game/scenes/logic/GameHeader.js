@@ -1,17 +1,15 @@
-import {createGrillGroup, onGrillClicked } from './grill.js';
+import { createGrillGroup, onGrillClicked } from './grill.js';
+import { createSkewer } from './skewer.js';
 
 export function setupBackground(scene) {
     scene.cameras.main.setBackgroundColor(0x00ff00);
 
-    scene.add.image(512, 512, 'background').setAlpha(0.5);
 
-    scene.add.text(512, 384, 'Make something fun!\nand share it with us:\nsupport@phaser.io', {
-        fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
-        stroke: '#000000', strokeThickness: 8,
-        align: 'center'
-    }).setOrigin(0.5);
+    const bg = scene.add.image(scene.cameras.main.centerX, scene.cameras.main.centerY, 'background').setAlpha(0.5);
+    bg.setDisplaySize(scene.cameras.main.width, scene.cameras.main.height);
 
-    createGrillGroup(scene, onGrillClicked, 3, 4);
+    // createGrillGroup(scene, onGrillClicked, 3, 4);
+    createSkewer(scene, 512, 384);
 }
 
 export function setupClickCounter(scene) {
