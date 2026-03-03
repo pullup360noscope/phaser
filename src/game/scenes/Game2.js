@@ -47,7 +47,7 @@ export class Game extends Scene {
         // const offsetX = 50; // Offset between groups of columns
         const offsetY = cellHeight / 2; // Vertical offset between rows
         // const offsetY = 100; // Vertical offset between rows
-        const SNAPPING_DISTANCE = cellWidth/2; // 5% of target size for snapping
+        const SNAPPING_DISTANCE = cellWidth; // 5% of target size for snapping
 
         console.log("viewportWidth: ", viewportWidth, "viewportHeight: ", viewportHeight);
         console.log("cellWidth: ", cellWidth, "cellHeight: ", cellHeight);
@@ -62,7 +62,7 @@ export class Game extends Scene {
                 const y = row * cellHeight + (offsetY * (row + 1));
 
                 // Add the coordinate to the array
-                coordinates.push({ x: x, y: y, item: null });
+                coordinates.push({ x: x, y: y, item: false });
                 // console.log('for loop: ', 'row: ', row, 'col: ', col, 'x: ', x, 'y: ', y);
             }
         }
@@ -89,27 +89,19 @@ export class Game extends Scene {
             // Skip creating the skewer based on the random number
             if (randomNum < probabilityThreshold) {
                 return; // Skip this iteration
-            }
+            }else{
             const skewer = this.physics.add.sprite(coord.x, coord.y, 'skewer');
             // skewer.setOrigin(0);
             skewer.setInteractive();
+            skewer.index= coordinates.indexOf(coord); // Store the index of the coordinate in the skewer
             this.input.setDraggable(skewer);
             coord.item = true; // Associate the skewer with the coordinate
             console.log('SKEWER')
+            console.log('skewer index: ', skewer.index);
 
             draggableObjects.push(skewer);
+            }
         });
-
-
-        // for (let row = 0; row < NUM_ROWS; row++) {
-        //     for (let col = 0; col < NUM_COLUMNS; col++) {
-        //         const targetX = col * (TARGET_SIZE + 20) + TARGET_SIZE / 2; // Center target
-        //         const targetY = row * (TARGET_SIZE + 20) + TARGET_SIZE / 2; // Center target
-        //         const target = this.physics.add.sprite(targetX, targetY, 'grill');
-        //         target.setDisplaySize(TARGET_SIZE, TARGET_SIZE); // Set target size
-        //         targetObjects.push(target);
-        //     }
-        // }
 
         //setup drag and drop logic
         this.input.on('drag', (pointer, skewer, dragX, dragY) => {
@@ -126,25 +118,43 @@ this.input.on('dragstart', (pointer, skewer) => {
 this.input.on('dragend', (pointer, skewer) => {
     console.log(skewer.texture.key);
     let snapped = false; // Flag to check if snapping occurred
+    let final = null; // Variable to store the target that was snapped to
     
-    coordinates.forEach(target => {
+    // Use find() to get first eligible target and break immediately
+    const targetCoord = coordinates.find((target, index) => {
+        // Skip the current coordinate where this skewer already is
+        if (index === skewer.index) {
+            return false;
+        }
+        
         const distance = Phaser.Math.Distance.Between(skewer.x, skewer.y, target.x, target.y);
         
-        // Conditional check for snapping
+        // Check if within snapping distance
         if (distance < SNAPPING_DISTANCE) {
+            // Check if target is already occupied
             if (target.item) {
-                console.log('Target already occupied!');
-                return; // Skip snapping if target is occupied
+                console.log("Target " + index + " already occupied!Continue to check if overlapping with empty target.");
+                return false; // Continue searching
             }
-            // If condition passes, snap to target
-            skewer.x = target.x;
-            skewer.y = target.y;
-            snapped = true; // Set snapped flag to true
+            // Found valid target
+            console.log("Snapped to target " + index);
+            snapped = true;
+            final = index;
+            return true; // Stop searching
         }
+        console.log("failed to snap to target " + index);
+        return false; // Continue searching
     });
     
-    // If snapping didn't occur, return skewer to original position
-    if (!snapped) {
+    // If snapping occurred, update positions and state
+    if (snapped) {
+        skewer.x = targetCoord.x;
+        skewer.y = targetCoord.y;
+        coordinates[skewer.index].item = false; // Clear previous coordinate
+        coordinates[final].item = true; // Mark new coordinate as occupied
+        skewer.index = final; // Update skewer's index
+    } else {
+        // Return skewer to original position if no valid snap found
         skewer.x = skewer.originalX;
         skewer.y = skewer.originalY;
     }
