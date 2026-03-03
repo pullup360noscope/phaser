@@ -12,6 +12,7 @@ export class Game extends Scene
         this.cameras.main.setBackgroundColor(0x00ff00);
 
         this.add.image(512, 384, 'background').setAlpha(0.5);
+        // this.add.image(512, 384, 'background').setAlpha(0.5);
 
         this.add.text(512, 384, 'Make something fun!\nand share it with us:\nsupport@phaser.io', {
             fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
@@ -19,10 +20,21 @@ export class Game extends Scene
             align: 'center'
         }).setOrigin(0.5);
 
-        this.input.once('pointerdown', () => {
+    // Initialize a counter to keep track of clicks
+    this.clickCount = 0;
 
+    this.input.on('pointerdown', () => {
+        this.clickCount++;
+
+        if (this.clickCount === 1) {
+            // First click behavior
+            console.log("Second click detected! You could add different logic here.");
+        } else if (this.clickCount === 2) {
+            // Second click behavior
             this.scene.start('GameOver');
-
-        });
+            // Reset the counter or add further logic as needed
+            this.clickCount = 0; // Resetting for demonstration
+        }
+    });
     }
 }

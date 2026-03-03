@@ -1,153 +1,119 @@
-# Phaser Vite Template
+Sure, I can help you create a documentation for creating a game in Phaser for local network access using the Match & Grill mechanic. Here's a step-by-step guide:
 
-This is a Phaser 3 project template that uses Vite for bundling. It supports hot-reloading for quick development workflow and includes scripts to generate production-ready builds.
+1. **Setting up the Project**
+   - Install Phaser using npm or yarn: `npm install phaser` or `yarn add phaser`
+   - Create a new HTML file and include the Phaser library in the `<head>` section of your HTML file: `<script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>`
+   - Create a new JavaScript file and link it to your HTML file using the `<script>` tag.
 
-**[This Template is also available as a TypeScript version.](https://github.com/phaserjs/template-vite-ts)**
+2. **Creating the Game Scene**
+   - In your JavaScript file, create a new class that extends the Phaser.Scene class.
+   - Inside the class, define the `preload` method to load the game assets (images, sounds, etc.).
+   - Define the `create` method to create the game objects and set up the game mechanics.
+   - Define the `update` method to handle game logic and update the game state.
 
-### Versions
+3. **Setting up the Grid**
+   - Create a 3x3 grid of grills using Phaser's `Group` class.
+   - Position the grills in a grid pattern using Phaser's `grid` layout.
+   - Add event listeners to each grill to detect when they are clicked.
 
-This template has been updated for:
+4. **Clearing Grills**
+   - When a grill is clicked, check if it is part of a row, column, or diagonal with two other identical grills.
+   - If so, clear the three grills by removing them from the scene.
+   - Add new skewers to the grid to replace the cleared grills.
 
-- [Phaser 3.90.0](https://github.com/phaserjs/phaser)
-- [Vite 6.3.1](https://github.com/vitejs/vite)
+5. **Scoring**
+   - Keep track of the player's score by incrementing a counter each time a grill is cleared.
+   - Display the score on the screen using Phaser's text rendering.
 
-![screenshot](screenshot.png)
+6. **Network Access**
+   - To enable local network access, you can use a server-side technology like Node.js to create a WebSocket server.
+   - Use a WebSocket library like `ws` or `socket.io` to handle communication between the game client and the server.
+   - When a grill is cleared, send a message to the server with the updated score.
+   - The server can then broadcast the updated score to all connected clients.
 
-## Requirements
+Here's an example code snippet to get you started:
 
-[Node.js](https://nodejs.org) is required to install dependencies and run scripts via `npm`.
+```javascript
+class MatchAndGrillScene extends Phaser.Scene {
+  constructor() {
+    super({ key: 'MatchAndGrillScene' });
+  }
 
-## Available Commands
+  preload() {
+    // Load game assets here
+  }
 
-| Command | Description |
-|---------|-------------|
-| `npm install` | Install project dependencies |
-| `npm run dev` | Launch a development web server |
-| `npm run build` | Create a production build in the `dist` folder |
-| `npm run dev-nolog` | Launch a development web server without sending anonymous data (see "About log.js" below) |
-| `npm run build-nolog` | Create a production build in the `dist` folder without sending anonymous data (see "About log.js" below) |
+  create() {
+    // Create game objects and set up mechanics here
+  }
 
-
-## Writing Code
-
-After cloning the repo, run `npm install` from your project directory. Then, you can start the local development server by running `npm run dev`.
-
-The local development server runs on `http://localhost:8080` by default. Please see the Vite documentation if you wish to change this, or add SSL support.
-
-Once the server is running you can edit any of the files in the `src` folder. Vite will automatically recompile your code and then reload the browser.
-
-## Template Project Structure
-
-We have provided a default project structure to get you started. This is as follows:
-
-| Path                         | Description                                                |
-|------------------------------|------------------------------------------------------------|
-| `index.html`                 | A basic HTML page to contain the game.                     |
-| `public/assets`              | Game sprites, audio, etc. Served directly at runtime.      |
-| `public/style.css`           | Global layout styles.                                      |
-| `src/main.js`                | Application bootstrap.                                     |
-| `src/game`                   | Folder containing the game code.                           |
-| `src/game/main.js`           | Game entry point: configures and starts the game.          |
-| `src/game/scenes`            | Folder with all Phaser game scenes.                        | 
-
-## Handling Assets
-
-Vite supports loading assets via JavaScript module `import` statements.
-
-This template provides support for both embedding assets and also loading them from a static folder. To embed an asset, you can import it at the top of the JavaScript file you are using it in:
-
-```js
-import logoImg from './assets/logo.png'
-```
-
-To load static files such as audio files, videos, etc place them into the `public/assets` folder. Then you can use this path in the Loader calls within Phaser:
-
-```js
-preload ()
-{
-    //  This is an example of an imported bundled image.
-    //  Remember to import it at the top of this file
-    this.load.image('logo', logoImg);
-
-    //  This is an example of loading a static image
-    //  from the public/assets folder:
-    this.load.image('background', 'assets/bg.png');
+  update() {
+    // Handle game logic and update state here
+  }
 }
+
+const config = {
+  type: Phaser.AUTO,
+  width: 800,
+  height: 600,
+  scene: [MatchAndGrillScene],
+};
+
+const game = new Phaser.Game(config);
+```
+///---
+If your game is meant to be played on an iPad with Safari, you can modify the code to optimize it for the iPad's screen size and Safari's rendering capabilities. Here are some suggestions:
+
+1. **Set the viewport meta tag**: Add the following meta tag to your HTML file to ensure that the game fits the iPad's screen size:
+   ```html
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   ```
+   This will set the viewport width to the device width and disable zooming.
+
+2. **Use responsive design**: Use CSS media queries to create a responsive design that adjusts to different screen sizes. For example, you can set different font sizes, padding, and margins for different screen sizes.
+
+3. **Optimize graphics**: Optimize your game's graphics for mobile devices by reducing file sizes and using compressed image formats like JPEG or WebP. You can also use techniques like sprite sheets and texture atlases to reduce the number of image requests.
+
+4. **Handle touch events**: Use Phaser's touch event handling to detect touch events on the iPad. You can use the `Phaser.Input` class to handle touch events and create touch-based interactions.
+
+5. **Test on real devices**: It's important to test your game on real devices to ensure that it works well and looks good on an iPad with Safari. Test your game on different iPad models and versions of Safari to ensure compatibility.
+
+Here's an example code snippet that includes some of these optimizations:
+
+```javascript
+class MatchAndGrillScene extends Phaser.Scene {
+  constructor() {
+    super({ key: 'MatchAndGrillScene' });
+  }
+
+  preload() {
+    // Load game assets here
+  }
+
+  create() {
+    // Create game objects and set up mechanics here
+    // Use CSS media queries to create a responsive design
+    // Use Phaser's touch event handling to handle touch events
+  }
+
+  update() {
+    // Handle game logic and update state here
+  }
+}
+
+const config = {
+  type: Phaser.AUTO,
+  width: 1024, // Set the initial width to a larger value
+  height: 768, // Set the initial height to a larger value
+  scale: {
+    mode: Phaser.Scale.FIT,
+    parent: 'game-container', // Set the parent container element
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+  },
+  scene: [MatchAndGrillScene],
+};
+
+const game = new Phaser.Game(config);
 ```
 
-When you issue the `npm run build` command, all static assets are automatically copied to the `dist/assets` folder.
-
-## Deploying to Production
-
-After you run the `npm run build` command, your code will be built into a single bundle and saved to the `dist` folder, along with any other assets your project imported, or stored in the public assets folder.
-
-In order to deploy your game, you will need to upload *all* of the contents of the `dist` folder to a public facing web server.
-
-## Customizing the Template
-
-### Vite
-
-If you want to customize your build, such as adding plugin (i.e. for loading CSS or fonts), you can modify the `vite/config.*.mjs` file for cross-project changes, or you can modify and/or create new configuration files and target them in specific npm tasks inside of `package.json`. Please see the [Vite documentation](https://vitejs.dev/) for more information.
-
-## About log.js
-
-If you inspect our node scripts you will see there is a file called `log.js`. This file makes a single silent API call to a domain called `gryzor.co`. This domain is owned by Phaser Studio Inc. The domain name is a homage to one of our favorite retro games.
-
-We send the following 3 pieces of data to this API: The name of the template being used (vue, react, etc). If the build was 'dev' or 'prod' and finally the version of Phaser being used.
-
-At no point is any personal data collected or sent. We don't know about your project files, device, browser or anything else. Feel free to inspect the `log.js` file to confirm this.
-
-Why do we do this? Because being open source means we have no visible metrics about which of our templates are being used. We work hard to maintain a large and diverse set of templates for Phaser developers and this is our small anonymous way to determine if that work is actually paying off, or not. In short, it helps us ensure we're building the tools for you.
-
-However, if you don't want to send any data, you can use these commands instead:
-
-Dev:
-
-```bash
-npm run dev-nolog
-```
-
-Build:
-
-```bash
-npm run build-nolog
-```
-
-Or, to disable the log entirely, simply delete the file `log.js` and remove the call to it in the `scripts` section of `package.json`:
-
-Before:
-
-```json
-"scripts": {
-    "dev": "node log.js dev & dev-template-script",
-    "build": "node log.js build & build-template-script"
-},
-```
-
-After:
-
-```json
-"scripts": {
-    "dev": "dev-template-script",
-    "build": "build-template-script"
-},
-```
-
-Either of these will stop `log.js` from running. If you do decide to do this, please could you at least join our Discord and tell us which template you're using! Or send us a quick email. Either will be super-helpful, thank you.
-
-## Join the Phaser Community!
-
-We love to see what developers like you create with Phaser! It really motivates us to keep improving. So please join our community and show-off your work 😄
-
-**Visit:** The [Phaser website](https://phaser.io) and follow on [Phaser Twitter](https://twitter.com/phaser_)<br />
-**Play:** Some of the amazing games [#madewithphaser](https://twitter.com/search?q=%23madewithphaser&src=typed_query&f=live)<br />
-**Learn:** [API Docs](https://newdocs.phaser.io), [Support Forum](https://phaser.discourse.group/) and [StackOverflow](https://stackoverflow.com/questions/tagged/phaser-framework)<br />
-**Discord:** Join us on [Discord](https://discord.gg/phaser)<br />
-**Code:** 2000+ [Examples](https://labs.phaser.io)<br />
-**Read:** The [Phaser World](https://phaser.io/community/newsletter) Newsletter<br />
-
-Created by [Phaser Studio](mailto:support@phaser.io). Powered by coffee, anime, pixels and love.
-
-The Phaser logo and characters are &copy; 2011 - 2025 Phaser Studio Inc.
-
-All rights reserved.
+I hope this helps you optimize your game for the iPad with Safari! Let me know if you have any further questions.
