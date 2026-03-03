@@ -10,6 +10,9 @@ march 3:
     -random group spawn on init and clear
     -clear mechanic should check if a group of three are identical
     -skewer sprite should be labeled with id, but also image?
+        -can use object.texture.key to pull up the image info
+            -assign each object its grid position
+                -grid position can be a nested array of [x,y] coordinates
     -clear mechanic should check if the group of three share the same image
     -target snap mechanic needs to be aware if its the center of the grill or not.
     -checking should be either two left neighbors, 1L and 1R or 2R neighbors.
