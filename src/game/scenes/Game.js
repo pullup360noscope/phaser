@@ -1,5 +1,5 @@
 import { Scene } from 'phaser';
-import { setupBackground, setupClickCounter, createGrillGroup, onGrillClicked } from './GameHeader.js';
+import { setupBackground, setupClickCounter, createGrillGroup, onGrillClicked } from './logic/GameHeader.js';
 
 export class Game extends Scene
 {
