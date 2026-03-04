@@ -37,11 +37,8 @@ export class Game extends Scene {
 
         let shuffled = [];
         let add = null;
-        let recentlyAdded = null;
-        let notRecentlyAdded = null;
         // Generate a random number between 0 and 1
         let randomNum;
-        let i = 0; // Initialize the counter
 
         do {
             randomNum = Math.random();
@@ -53,12 +50,9 @@ export class Game extends Scene {
 
             // Check if there are enough items in shuffled to compare
             if (shuffled.length >= 2) {
-                recentlyAdded = shuffled[shuffled.length - 1];
-                notRecentlyAdded = shuffled[shuffled.length - 2];
-
-                if (recentlyAdded === notRecentlyAdded && recentlyAdded === add) {
+                if (shuffled[shuffled.length - 1] === shuffled[shuffled.length - 2] && shuffled[shuffled.length - 1] === add) {
                     shuffled.push('empty');
-                    console.log("Added empty to prevent consecutive skewers of the same type");
+                    console.log("Added empty to prevent consecutive skewers of the same type\nloop: "+queuedSkewers.length);
                 }
             }
 
@@ -69,7 +63,7 @@ export class Game extends Scene {
         while(queuedSkewers.length%3!==0){
             queuedSkewers.push('empty');
         }
-        console.log("Final shuffled skewers: ", queuedSkewers);
+        // console.log("Final shuffled skewers: ", queuedSkewers);
 
         for (let row = 0; row < rows; row++) {
             for (let col = 0; col < columns; col++) {
