@@ -1,3 +1,6 @@
+march 4.1:
+-add pause button
+
 march 4:
 -add win screen
     -check coordinates?

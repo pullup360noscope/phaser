@@ -10,6 +10,7 @@ export class Game extends Scene {
 
     preload() {
         this.load.image('grill', 'assets/grill.png');
+        this.load.image('timerIcon','assets/clock.png')
         preloadSkewers(this, 4);
     }
 
@@ -28,11 +29,11 @@ export class Game extends Scene {
         const offsetY = cellHeight / 2;
         const SNAPPING_DISTANCE = cellWidth;
 
-        const groups = 2;
+        const groups = 10;
         const empty_percent = 0.3;
         let timer;
         let timerEvent;
-        let timeLeft = 60; // example: 60 seconds
+        let timeLeft = 300; // example: 60 seconds
 
 
 
@@ -65,6 +66,7 @@ export class Game extends Scene {
         while (queuedSkewers.length % 3 !== 0) {
             queuedSkewers.push('empty');
         }
+        console.log('total num skewers: ',queuedSkewers.length)
         // console.log("Final shuffled skewers: ", queuedSkewers);
 
         for (let row = 1; row < rows; row++) {
@@ -85,11 +87,14 @@ export class Game extends Scene {
             target.setDisplaySize(TARGET_SIZE, TARGET_SIZE);
         }
 
-        timer = this.add.text(this.game.config.width/2, cellHeight/2, `00:${timeLeft < 10 ? '0' + timeLeft : timeLeft}`, {
-            fontSize: `${cellWidth/2}px`,
+        this.add.image(this.game.config.width/2-50, cellHeight/2, 'timerIcon').setDisplaySize(cellWidth, cellWidth);
+
+
+        timer = this.add.text(this.game.config.width / 2, cellHeight / 2, `${timeLeft/60 < 10 ? '0' + Math.floor(timeLeft/60) : Math.floor(timeLeft/60)}:${timeLeft%60 < 10 ? '0' + timeLeft%60 : timeLeft%60}`, {
+            fontSize: `${cellWidth / 2}px`,
             fill: '#00ff00',
             fontFamily: '"Luckiest Guy", cursive', // Use the selected font here
-            backgroundColor: '#00000000' // transparent background
+            backgroundColor: '#00000000', // transparent background
         });
 
         // Create a timed event that calls the updateTimer function every second
@@ -100,26 +105,26 @@ export class Game extends Scene {
             loop: true
         });
 
-function updateTimer() {
-    timeLeft--;
+        function updateTimer() {
+            timeLeft--;
 
-    // Format timer to ensure two-digit display
-    const seconds = timeLeft >= 0 ? timeLeft : 0;
-    const timeText = `00:${seconds < 10 ? '0' + seconds : seconds}`;
+            // Format timer to ensure two-digit display
+            const seconds = timeLeft >= 0 ? timeLeft : 0;
+            const timeText = `${timeLeft/60 < 10 ? '0' + Math.floor(timeLeft/60) : Math.floor(timeLeft/60)}:${seconds%60 < 10 ? '0' + seconds%60 : seconds%60}`;
 
-    // Update the text display
-    timer.setText(timeText);
+            // Update the text display
+            timer.setText(timeText);
 
-    // Check if the time has run out
-    if (timeLeft <= 0) {
-        timerEvent.remove(); // Stop the timer
-        this.scene.pause(); // Optional: pause the game
-        console.log("Time's up!");
-    }
-}
+            // Check if the time has run out
+            if (timeLeft <= 0) {
+                timerEvent.remove(); // Stop the timer
+                this.scene.start('GameOver');
+                console.log("Time's up!");
+            }
+        }
 
 
-        this.add.rectangle(this.game.config.width / 2, cellHeight, this.game.config.width +50, cellWidth / 2).setStrokeStyle(cellWidth / 10, 0xb48a4f);
+        this.add.rectangle(this.game.config.width / 2, cellHeight, this.game.config.width + 50, cellWidth / 2).setStrokeStyle(cellWidth / 10, 0xb48a4f);
 
         const createSkewer = (coord) => {
             let skewerKey;
@@ -128,7 +133,7 @@ function updateTimer() {
             } else {
                 return;
             }
-            console.log(skewerKey)
+            // console.log(skewerKey)
             if (skewerKey === 'empty') {
                 return;
             } else {
