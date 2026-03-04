@@ -87,7 +87,7 @@ export class Game extends Scene {
             target.setDisplaySize(TARGET_SIZE, TARGET_SIZE);
         }
 
-        this.add.image(this.game.config.width/2-50, cellHeight/2, 'timerIcon').setDisplaySize(cellWidth, cellWidth);
+        this.add.image(this.game.config.width/2-50, cellHeight/2+cellWidth/4, 'timerIcon').setDisplaySize(cellWidth, cellWidth);
 
 
         timer = this.add.text(this.game.config.width / 2, cellHeight / 2, `${timeLeft/60 < 10 ? '0' + Math.floor(timeLeft/60) : Math.floor(timeLeft/60)}:${timeLeft%60 < 10 ? '0' + timeLeft%60 : timeLeft%60}`, {
