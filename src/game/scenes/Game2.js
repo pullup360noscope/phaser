@@ -40,7 +40,7 @@ export class Game extends Scene {
         // console.log("width ratio: ", viewportWidth / cellWidth, "height ratio: ", viewportHeight / cellHeight);
 
         let type = 'empty';
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < 10; i++) {
             type = `skewer${Math.floor(Math.random() * 4)}`;
             queuedSkewers.push(type, type, type);
         }
@@ -76,6 +76,9 @@ export class Game extends Scene {
         } while (queuedSkewers.length>0); // Continue until all items are processed
 
         queuedSkewers = shuffled;
+        while(queuedSkewers.length%3!==0){
+            queuedSkewers.push('empty');
+        }
         console.log("Final shuffled skewers: ", queuedSkewers);
 
         for (let row = 0; row < rows; row++) {
@@ -104,7 +107,9 @@ export class Game extends Scene {
 
         const createSkewer = (coord) =>{
             const skewerKey = queuedSkewers.shift();
-            if (skewerKey === 'empty') return; // Skip creating a skewer for 'empty' entries
+            if (skewerKey === 'empty'){
+                return; // Skip creating a skewer for 'empty' entries
+            }else{
             // console.log(queuedSkewers);
             const skewer = this.physics.add.sprite(coord.x, coord.y, skewerKey);
             // skewer.setOrigin(0);
@@ -119,6 +124,7 @@ export class Game extends Scene {
             coord.skewer = skewer; // Store a reference to the skewer in the coordinate for easy access
             // console.log('SKEWER')
             // console.log('skewer index: ', skewer.index);
+            }
         }
         // Create draggable objects
         coordinates.forEach(coord => {
@@ -180,7 +186,7 @@ export class Game extends Scene {
                 coordinates[final].skewer = skewer; // Update the skewer reference in the new coordinate
                 skewer.index = final; // Update skewer's index
                 direction = checkWinCondition(coordinates, skewer, queuedSkewers);
-                if(direction[0]!==0 || direction[1]!==0){
+                if(direction[0]!==0 && direction[1]!==0 && queuedSkewers.length>0){
                     console.log("Win condition met! Direction: ", direction);
                     createSkewer(coordinates[skewer.index]);
                     direction.forEach(move => {
