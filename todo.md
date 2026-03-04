@@ -1,3 +1,7 @@
+march 3.2:
+-manually parse 36 skewers from original game to store as png in assets
+-host webpage for free
+
 march 3.1:
 -check winCon
     -only need to check nearby locality of the snapped index
@@ -5,6 +9,7 @@ march 3.1:
 -spawn new skewers
     -standardize png resolution (auto gen pixel art?)
     -best way to load assets?
+    -setup FIFO to decide which type of skewer is rendered next
 -add menu
 -difficulty generator
 

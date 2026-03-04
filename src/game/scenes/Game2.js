@@ -1,11 +1,6 @@
 import { Scene } from 'phaser';
+import { preloadSkewers } from './preloadSkewers.js';
 import { checkWinCondition } from './logic/winCondition.js';
-
-const NUM_COLUMNS = 3;
-const NUM_ROWS = 4;
-let TARGET_SIZE, DRAGGABLE_WIDTH, DRAGGABLE_HEIGHT;
-const SNAPPING_DISTANCE_RATIO = 0.3; // Ratio for snapping distance
-
 
 export class Game extends Scene {
     constructor() {
@@ -15,16 +10,13 @@ export class Game extends Scene {
     preload() {
         // Preload any necessary assets here
         this.load.image('grill', 'assets/grill.png'); // Load the grill image
-        this.load.image('skewer', 'assets/skewer0.png'); // Load the skewer image
+        preloadSkewers(this); // Preload skewer images using the helper function
     }
 
     create() {
         let targetObjects = [];
         let draggableObjects = [];
-        const baseWidth = this.game.config.width / NUM_COLUMNS; // Base width per column
-
-        // Set sizes based on viewport dimensions
-        TARGET_SIZE = baseWidth * 0.8; // Target size is 80% of base width
+        let queuedSkewers = [];
 
         const viewportWidth = this.game.config.width; // Example viewport width
         const viewportHeight = this.game.config.height; // Example viewport height
@@ -32,6 +24,8 @@ export class Game extends Scene {
         const columns = 9;
         const rows = 4;
         const columnGroupOffset = 3; // Group offset for every 3 columns
+
+        const TARGET_SIZE = 0.8 * this.game.config.width / (columns/3); // Base width per column
 
         // Calculate the width and height for individual coordinates
         const cellWidth = viewportWidth / (4 * columns / 3);
@@ -45,6 +39,10 @@ export class Game extends Scene {
         // console.log("viewportWidth: ", viewportWidth, "viewportHeight: ", viewportHeight);
         // console.log("cellWidth: ", cellWidth, "cellHeight: ", cellHeight);
         // console.log("width ratio: ", viewportWidth / cellWidth, "height ratio: ", viewportHeight / cellHeight);
+
+        for (let i = 0; i < 45; i++) {
+            queuedSkewers.push(`skewer${Math.floor(Math.random() * 4)}`);
+        }
 
         for (let row = 0; row < rows; row++) {
             for (let col = 0; col < columns; col++) {
@@ -83,7 +81,9 @@ export class Game extends Scene {
             if (randomNum < probabilityThreshold) {
                 return; // Skip this iteration
             } else {
-                const skewer = this.physics.add.sprite(coord.x, coord.y, 'skewer');
+                const skewerKey = queuedSkewers.shift();
+                // console.log(queuedSkewers);
+                const skewer = this.physics.add.sprite(coord.x, coord.y, skewerKey);
                 // skewer.setOrigin(0);
                 skewer.setInteractive();
                 const spriteWidth = skewer.width;
