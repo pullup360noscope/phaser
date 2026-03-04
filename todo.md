@@ -1,5 +1,8 @@
 march 4.1:
 -add pause button
+    -difficulty sliders?
+-more skewers
+-next skewer preview (2stage coordinate system)
 
 march 4:
 -add win screen
