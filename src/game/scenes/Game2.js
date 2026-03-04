@@ -14,30 +14,20 @@ export class Game extends Scene {
     }
 
     create() {
-        let targetObjects = [];
-        let queuedSkewers = [];
+        let queuedSkewers = []; //can be re-assigned
+        const coordinates = []; //contents modified, but pointer doesn't get re-assigned
 
-        const viewportWidth = this.game.config.width; // Example viewport width
-        const viewportHeight = this.game.config.height; // Example viewport height
-        const coordinates = [];
         const columns = 9;
         const rows = 4;
         const columnGroupOffset = 3; // Group offset for every 3 columns
-
         const TARGET_SIZE = 0.8 * this.game.config.width / (columns / 3); // Base width per column
 
         // Calculate the width and height for individual coordinates
-        const cellWidth = viewportWidth / (4 * columns / 3);
-        const cellHeight = viewportHeight / (1.5 * rows);
+        const cellWidth = this.game.config.width / (4 * columns / 3);
+        const cellHeight = this.game.config.height / (1.5 * rows);
         const offsetX = cellWidth; // Offset between groups of columns
-        // const offsetX = 50; // Offset between groups of columns
         const offsetY = cellHeight / 2; // Vertical offset between rows
-        // const offsetY = 100; // Vertical offset between rows
         const SNAPPING_DISTANCE = cellWidth; // 5% of target size for snapping
-
-        // console.log("viewportWidth: ", viewportWidth, "viewportHeight: ", viewportHeight);
-        // console.log("cellWidth: ", cellWidth, "cellHeight: ", cellHeight);
-        // console.log("width ratio: ", viewportWidth / cellWidth, "height ratio: ", viewportHeight / cellHeight);
 
         let type = 'empty';
         for (let i = 0; i < 10; i++) {
@@ -54,17 +44,17 @@ export class Game extends Scene {
         let i = 0; // Initialize the counter
 
         do {
-            let randomNum = Math.random();
+            randomNum = Math.random();
             if (randomNum < 0.3) {
                 shuffled.push('empty');
             }
 
-            let add = queuedSkewers.splice(Math.floor(Math.random() * queuedSkewers.length), 1)[0];
+            add = queuedSkewers.splice(Math.floor(Math.random() * queuedSkewers.length), 1)[0];
 
             // Check if there are enough items in shuffled to compare
             if (shuffled.length >= 2) {
-                let recentlyAdded = shuffled[shuffled.length - 1];
-                let notRecentlyAdded = shuffled[shuffled.length - 2];
+                recentlyAdded = shuffled[shuffled.length - 1];
+                notRecentlyAdded = shuffled[shuffled.length - 2];
 
                 if (recentlyAdded === notRecentlyAdded && recentlyAdded === add) {
                     shuffled.push('empty');
@@ -102,7 +92,6 @@ export class Game extends Scene {
             const coord = coordinates[i];
             const target = this.physics.add.sprite(coord.x, coord.y + (0.4 * offsetY), 'grill');
             target.setDisplaySize(TARGET_SIZE, TARGET_SIZE);
-            targetObjects.push(target);
         }
 
         const createSkewer = (coord) =>{
