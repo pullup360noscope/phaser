@@ -1,3 +1,8 @@
+march 4:
+-add win screen
+    -check coordinates?
+    -keep a counter?
+
 march 3.2:
 -manually parse 36 skewers from original game to store as png in assets
 -host webpage for free
