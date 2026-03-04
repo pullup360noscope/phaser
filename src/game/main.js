@@ -3,6 +3,7 @@ import { Game as MainGame } from './scenes/Game2';
 import { GameOver } from './scenes/GameOver';
 import { MainMenu } from './scenes/MainMenu';
 import { Preloader } from './scenes/Preloader';
+import { Winner } from './scenes/Winner';
 import { AUTO, Game } from 'phaser';
 
 //  Find out more information about the Game Config at:
@@ -35,7 +36,8 @@ const config = {
         Preloader,
         MainMenu,
         MainGame,
-        GameOver
+        GameOver,
+        Winner
     ]
 };
 

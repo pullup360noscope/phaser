@@ -2,6 +2,7 @@ import { Scene } from 'phaser';
 import { preloadSkewers } from './preloadSkewers.js';
 import { checkWinCondition } from './logic/winCondition.js';
 
+
 export class Game extends Scene {
     constructor() {
         super('Game');
@@ -27,18 +28,21 @@ export class Game extends Scene {
         const offsetY = cellHeight / 2;
         const SNAPPING_DISTANCE = cellWidth;
 
+        const groups = 2;
+        const empty_percent = 0.3;
         let type = 'empty';
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < groups; i++) {
             type = `skewer${Math.floor(Math.random() * 4)}`;
             queuedSkewers.push(type, type, type);
         }
+        let progress = queuedSkewers.length;
 
         let shuffled = [];
         let add = null;
         let randomNum;
         do {
             randomNum = Math.random();
-            if (randomNum < 0.3) {
+            if (randomNum < empty_percent) {
                 shuffled.push('empty');
             }
             add = queuedSkewers.splice(Math.floor(Math.random() * queuedSkewers.length), 1)[0];
@@ -76,7 +80,13 @@ export class Game extends Scene {
         }
 
         const createSkewer = (coord) => {
-            const skewerKey = queuedSkewers.shift();
+            let skewerKey;
+            if(queuedSkewers.length>0){
+                skewerKey = queuedSkewers.shift();
+            }else{
+                return;
+            }
+            console.log(skewerKey)
             if (skewerKey === 'empty') {
                 return;
             } else {
@@ -141,14 +151,26 @@ export class Game extends Scene {
                 coordinates[final].occupied = true;
                 coordinates[final].skewer = skewer;
                 skewer.index = final;
-                direction = checkWinCondition(coordinates, skewer, queuedSkewers);
-                if (direction[0] !== 0 && direction[1] !== 0 && queuedSkewers.length > 0) {
-                    console.log("Win condition met! Direction: ", direction);
-                    createSkewer(coordinates[skewer.index]);
-                    direction.forEach(move => {
-                        console.log("Creating new skewer at index: ", skewer.index + move);
-                        createSkewer(coordinates[skewer.index + move]);
-                    });
+                // pass the scene reference so the win-condition logic can animate removals
+                direction = checkWinCondition(this, coordinates, skewer);
+                if (direction[0] !== 0 && direction[1] !== 0) {
+                    progress = progress - 3;
+                    console.log('remaining: ',progress);
+                    if (queuedSkewers.length > 0) {
+                        console.log("Win condition met! Direction: ", direction);
+                        createSkewer(coordinates[skewer.index]);
+                        direction.forEach(move => {
+                            console.log("Creating new skewer at index: ", skewer.index + move);
+                            createSkewer(coordinates[skewer.index + move]);
+                        });
+                    } else {
+                        if (progress === 0) {
+                            this.time.delayedCall(600, () => {
+                                this.scene.start('Winner');
+                            });
+                        }
+                    }
+
                 }
             } else {
                 skewer.x = skewer.originalX;

@@ -1,4 +1,5 @@
-export function checkWinCondition(coordinates, skewer) {
+// `scene` is required to animate skewers before they are removed.
+export function checkWinCondition(scene, coordinates, skewer) {
     // Check if all skewers are in the correct positions
     console.log("Checking win condition...");
     console.log("Skewer index: ", skewer.index);
@@ -37,16 +38,34 @@ export function checkWinCondition(coordinates, skewer) {
             return coordinates[index+move].skewer.texture.key === texture;
             }
         })){
-            direction.forEach(move => {
-                console.log("Destroying skewer at index: ", index+move);
-                coordinates[index+move].skewer.destroy();
-                coordinates[index+move].skewer = null;
-                coordinates[index+move].occupied = false;
+            // animate each skewer before cleanup
+            const allIndices = [index, ...direction.map(m => index + m)];
+            allIndices.forEach(i => {
+                const obj = coordinates[i].skewer;
+                if (!obj) return;
+                // free the slot immediately so new skewers can be spawned there
+                coordinates[i].skewer = null;
+                coordinates[i].occupied = false;
+                // timeline: move up off top of screen then slide right off screen
+                // if the tween manager doesn't expose timelines, fall back to chained tweens
+                scene.tweens.add({
+                    targets: obj,
+                    ease: 'Linear',
+                    duration: 300,
+                    y: scene.cameras.main.height/4-obj.height,
+                    onComplete: () => {
+                        scene.tweens.add({
+                            targets: obj,
+                            ease: 'Linear',
+                            duration: 300,
+                            x: scene.sys.canvas.width + obj.width,
+                            onComplete: () => {
+                                obj.destroy();
+                            }
+                        });
+                    }
+                });
             });
-            console.log("Destroying skewer at index: ", index);
-            coordinates[index].skewer.destroy();
-            coordinates[index].skewer = null;
-            coordinates[index].occupied = false;
             return direction;
         }else{
             return [0,0];
