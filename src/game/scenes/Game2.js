@@ -156,7 +156,5 @@ export class Game extends Scene {
             }
         });
 
-
-    }
-
-}
+    }//create()
+}//class game
