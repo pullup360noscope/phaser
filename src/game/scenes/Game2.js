@@ -10,12 +10,11 @@ export class Game extends Scene {
     preload() {
         // Preload any necessary assets here
         this.load.image('grill', 'assets/grill.png'); // Load the grill image
-        preloadSkewers(this); // Preload skewer images using the helper function
+        preloadSkewers(this, 4); // Preload skewer images using the helper function
     }
 
     create() {
         let targetObjects = [];
-        let draggableObjects = [];
         let queuedSkewers = [];
 
         const viewportWidth = this.game.config.width; // Example viewport width
@@ -25,7 +24,7 @@ export class Game extends Scene {
         const rows = 4;
         const columnGroupOffset = 3; // Group offset for every 3 columns
 
-        const TARGET_SIZE = 0.8 * this.game.config.width / (columns/3); // Base width per column
+        const TARGET_SIZE = 0.8 * this.game.config.width / (columns / 3); // Base width per column
 
         // Calculate the width and height for individual coordinates
         const cellWidth = viewportWidth / (4 * columns / 3);
@@ -40,9 +39,44 @@ export class Game extends Scene {
         // console.log("cellWidth: ", cellWidth, "cellHeight: ", cellHeight);
         // console.log("width ratio: ", viewportWidth / cellWidth, "height ratio: ", viewportHeight / cellHeight);
 
-        for (let i = 0; i < 45; i++) {
-            queuedSkewers.push(`skewer${Math.floor(Math.random() * 4)}`);
+        let type = 'empty';
+        for (let i = 0; i < 15; i++) {
+            type = `skewer${Math.floor(Math.random() * 4)}`;
+            queuedSkewers.push(type, type, type);
         }
+
+        let shuffled = [];
+        let add = null;
+        let recentlyAdded = null;
+        let notRecentlyAdded = null;
+        // Generate a random number between 0 and 1
+        let randomNum;
+        let i = 0; // Initialize the counter
+
+        do {
+            let randomNum = Math.random();
+            if (randomNum < 0.3) {
+                shuffled.push('empty');
+            }
+
+            let add = queuedSkewers.splice(Math.floor(Math.random() * queuedSkewers.length), 1)[0];
+
+            // Check if there are enough items in shuffled to compare
+            if (shuffled.length >= 2) {
+                let recentlyAdded = shuffled[shuffled.length - 1];
+                let notRecentlyAdded = shuffled[shuffled.length - 2];
+
+                if (recentlyAdded === notRecentlyAdded && recentlyAdded === add) {
+                    shuffled.push('empty');
+                    console.log("Added empty to prevent consecutive skewers of the same type");
+                }
+            }
+
+            shuffled.push(add);
+        } while (queuedSkewers.length>0); // Continue until all items are processed
+
+        queuedSkewers = shuffled;
+        console.log("Final shuffled skewers: ", queuedSkewers);
 
         for (let row = 0; row < rows; row++) {
             for (let col = 0; col < columns; col++) {
@@ -53,7 +87,7 @@ export class Game extends Scene {
                 const y = row * cellHeight + (offsetY * (row + 1));
 
                 // Add the coordinate to the array
-                coordinates.push({ x: x, y: y, occupied: false, type: 'empty' });
+                coordinates.push({ x: x, y: y, occupied: false, skewer: null });
                 // console.log('for loop: ', 'row: ', row, 'col: ', col, 'x: ', x, 'y: ', y);
             }
         }
@@ -68,38 +102,29 @@ export class Game extends Scene {
             targetObjects.push(target);
         }
 
+        const createSkewer = (coord) =>{
+            const skewerKey = queuedSkewers.shift();
+            if (skewerKey === 'empty') return; // Skip creating a skewer for 'empty' entries
+            // console.log(queuedSkewers);
+            const skewer = this.physics.add.sprite(coord.x, coord.y, skewerKey);
+            // skewer.setOrigin(0);
+            skewer.setInteractive();
+            const spriteWidth = skewer.width;
+            const aspectRatio = skewer.height / spriteWidth;
+            skewer.setDisplaySize(cellWidth, cellWidth * aspectRatio);
+            // skewer.setDisplaySize(cellWidth * 0.8, cellHeight * 0.8); // Set skewer size relative to cell size
+            skewer.index = coordinates.indexOf(coord); // Store the index of the coordinate in the skewer
+            this.input.setDraggable(skewer);
+            coord.occupied = true; // Associate the skewer with the coordinate
+            coord.skewer = skewer; // Store a reference to the skewer in the coordinate for easy access
+            // console.log('SKEWER')
+            // console.log('skewer index: ', skewer.index);
+        }
         // Create draggable objects
         coordinates.forEach(coord => {
-
-            // Generate a random number between 0 and 1
-            const randomNum = Math.random();
-
-            // Set your probability threshold (e.g., 0.5 for 50%)
-            const probabilityThreshold = 0.3;
-
-            // Skip creating the skewer based on the random number
-            if (randomNum < probabilityThreshold) {
-                return; // Skip this iteration
-            } else {
-                const skewerKey = queuedSkewers.shift();
-                // console.log(queuedSkewers);
-                const skewer = this.physics.add.sprite(coord.x, coord.y, skewerKey);
-                // skewer.setOrigin(0);
-                skewer.setInteractive();
-                const spriteWidth = skewer.width;
-                const aspectRatio = skewer.height / spriteWidth;
-                skewer.setDisplaySize(cellWidth, cellWidth * aspectRatio);
-                // skewer.setDisplaySize(cellWidth * 0.8, cellHeight * 0.8); // Set skewer size relative to cell size
-                skewer.index = coordinates.indexOf(coord); // Store the index of the coordinate in the skewer
-                this.input.setDraggable(skewer);
-                coord.occupied = true; // Associate the skewer with the coordinate
-                coord.type = skewer.texture.key; // Store the type of skewer in the coordinate for win condition checking
-                // console.log('SKEWER')
-                // console.log('skewer index: ', skewer.index);
-
-                draggableObjects.push(skewer);
-            }
+            createSkewer(coord);
         });
+
 
         //setup drag and drop logic
         this.input.on('drag', (pointer, skewer, dragX, dragY) => {
@@ -117,6 +142,7 @@ export class Game extends Scene {
             console.log(skewer.texture.key);
             let snapped = false; // Flag to check if snapping occurred
             let final = null; // Variable to store the target that was snapped to
+            let direction = null; // Variable to store the direction of the win condition check
 
             // Use find() to get first eligible target and break immediately
             const targetCoord = coordinates.find((target, index) => {
@@ -149,9 +175,19 @@ export class Game extends Scene {
                 skewer.x = targetCoord.x;
                 skewer.y = targetCoord.y;
                 coordinates[skewer.index].occupied = false; // Clear previous coordinate
+                coordinates[skewer.index].skewer = null; // Clear skewer reference from previous coordinate
                 coordinates[final].occupied = true; // Mark new coordinate as occupied
+                coordinates[final].skewer = skewer; // Update the skewer reference in the new coordinate
                 skewer.index = final; // Update skewer's index
-                checkWinCondition(coordinates);
+                direction = checkWinCondition(coordinates, skewer, queuedSkewers);
+                if(direction[0]!==0 || direction[1]!==0){
+                    console.log("Win condition met! Direction: ", direction);
+                    createSkewer(coordinates[skewer.index]);
+                    direction.forEach(move => {
+                        console.log("Creating new skewer at index: ", skewer.index+move);
+                        createSkewer(coordinates[skewer.index+move]);
+                    });
+                }
             } else {
                 // Return skewer to original position if no valid snap found
                 skewer.x = skewer.originalX;
