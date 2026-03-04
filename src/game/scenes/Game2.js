@@ -18,7 +18,7 @@ export class Game extends Scene {
         const coordinates = [];
 
         const columns = 9;
-        const rows = 4;
+        const rows = 5;
         const columnGroupOffset = 3;
         const TARGET_SIZE = 0.8 * this.game.config.width / (columns / 3);
 
@@ -30,6 +30,12 @@ export class Game extends Scene {
 
         const groups = 2;
         const empty_percent = 0.3;
+        let timer;
+        let timerEvent;
+        let timeLeft = 60; // example: 60 seconds
+
+
+
         let type = 'empty';
         for (let i = 0; i < groups; i++) {
             type = `skewer${Math.floor(Math.random() * 4)}`;
@@ -61,7 +67,7 @@ export class Game extends Scene {
         }
         // console.log("Final shuffled skewers: ", queuedSkewers);
 
-        for (let row = 0; row < rows; row++) {
+        for (let row = 1; row < rows; row++) {
             for (let col = 0; col < columns; col++) {
                 const xOffset = (Math.floor(col / columnGroupOffset) + 1) * offsetX;
                 const x = col * cellWidth + xOffset;
@@ -79,11 +85,47 @@ export class Game extends Scene {
             target.setDisplaySize(TARGET_SIZE, TARGET_SIZE);
         }
 
+        timer = this.add.text(this.game.config.width/2, cellHeight/2, `00:${timeLeft < 10 ? '0' + timeLeft : timeLeft}`, {
+            fontSize: `${cellWidth/2}px`,
+            fill: '#00ff00',
+            fontFamily: '"Luckiest Guy", cursive', // Use the selected font here
+            backgroundColor: '#00000000' // transparent background
+        });
+
+        // Create a timed event that calls the updateTimer function every second
+        timerEvent = this.time.addEvent({
+            delay: 1000, // 1000 ms = 1 second
+            callback: updateTimer,
+            callbackScope: this,
+            loop: true
+        });
+
+function updateTimer() {
+    timeLeft--;
+
+    // Format timer to ensure two-digit display
+    const seconds = timeLeft >= 0 ? timeLeft : 0;
+    const timeText = `00:${seconds < 10 ? '0' + seconds : seconds}`;
+
+    // Update the text display
+    timer.setText(timeText);
+
+    // Check if the time has run out
+    if (timeLeft <= 0) {
+        timerEvent.remove(); // Stop the timer
+        this.scene.pause(); // Optional: pause the game
+        console.log("Time's up!");
+    }
+}
+
+
+        this.add.rectangle(this.game.config.width / 2, cellHeight, this.game.config.width +50, cellWidth / 2).setStrokeStyle(cellWidth / 10, 0xb48a4f);
+
         const createSkewer = (coord) => {
             let skewerKey;
-            if(queuedSkewers.length>0){
+            if (queuedSkewers.length > 0) {
                 skewerKey = queuedSkewers.shift();
-            }else{
+            } else {
                 return;
             }
             console.log(skewerKey)
@@ -155,7 +197,7 @@ export class Game extends Scene {
                 direction = checkWinCondition(this, coordinates, skewer);
                 if (direction[0] !== 0 && direction[1] !== 0) {
                     progress = progress - 3;
-                    console.log('remaining: ',progress);
+                    console.log('remaining: ', progress);
                     if (queuedSkewers.length > 0) {
                         console.log("Win condition met! Direction: ", direction);
                         createSkewer(coordinates[skewer.index]);
